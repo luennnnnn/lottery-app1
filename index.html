@@ -1,130 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>幸运抽奖系统</title>
+    <title>活动报名系统</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        /* 隐藏所有容器 */
         .container { display: none; }
-        .admin-btn { position: fixed; top: 10px; right: 10px; padding: 5px; background: #f0f0f0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        /* 默认显示报名表单 */
+        #registerForm { display: block; }
+        /* 管理员入口样式 */
+        .admin-entry {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 5px;
+            background: #f0f0f0;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <!-- 报名表单 -->
+    <!-- 用户报名界面（默认显示） -->
     <div id="registerForm" class="container">
         <h2>活动报名</h2>
         <form id="signupForm">
-            <input type="text" id="name" placeholder="姓名" required><br>
-            <input type="tel" id="phone" placeholder="手机号" required><br>
-            <input type="text" id="company" placeholder="工作单位"><br>
-            <input type="text" id="title" placeholder="职称"><br>
-            <button type="submit">提交报名</button>
+            <input type="text" placeholder="姓名" required>
+            <input type="tel" placeholder="手机号" required>
+            <button type="submit">立即报名</button>
         </form>
+    </div>
+
+    <!-- 管理员入口（隐藏在右上角） -->
+    <div class="admin-entry" onclick="showAdminLogin()">管理入口</div>
+
+    <!-- 管理员登录弹窗 -->
+    <div id="adminLogin" class="container">
+        <input type="password" id="adminPass" placeholder="请输入管理密码">
+        <button onclick="adminLogin()">登录</button>
     </div>
 
     <!-- 管理员界面 -->
     <div id="adminPanel" class="container">
-        <h2>管理后台</h2>
-        <button onclick="startLottery()">开始抽奖</button>
-        <div id="winnersList"></div>
-    </div>
-
-    <!-- 中奖展示 -->
-    <div id="resultPage" class="container">
-        <h2>中奖名单</h2>
-        <div id="winnersDisplay"></div>
-    </div>
-
-    <!-- 管理员登录弹窗 -->
-    <div id="loginModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border:1px solid #ccc;">
-        <input type="password" id="adminPass" placeholder="输入管理员密码">
-        <button onclick="checkLogin()">登录</button>
-    </div>
-
-    <script>
-        let participants = [];
-        let adminMode = false;
-        const predefinedWinners = []; // 内定中奖人编号
-
-        // 显示报名表单
-        document.getElementById('registerForm').style.display = 'block';
-
-        // 报名表单提交
-        document.getElementById('signupForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const newParticipant = {
-                id: String(participants.length + 1).padStart(3, '0'),
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                company: document.getElementById('company').value,
-                title: document.getElementById('title').value
-            };
-            participants.push(newParticipant);
-            alert('报名成功！');
-            this.reset();
-        });
-
-        // 管理员登录
-        function checkLogin() {
-            if (document.getElementById('adminPass').value === 'admin888') { // 默认密码
-                adminMode = true;
-                document.getElementById('loginModal').style.display = 'none';
-                showAdminPanel();
-            }
-        }
-
-        // 显示管理界面
-        function showAdminPanel() {
-            document.getElementById('adminPanel').style.display = 'block';
-            document.getElementById('winnersList').innerHTML = participants.map(p => 
-                `<div>${p.id} ${p.name} ${p.phone} <input type="checkbox" data-id="${p.id}"></div>`
-            ).join('');
-        }
-
-        // 抽奖逻辑
-        function startLottery() {
-            // 获取内定名单
-            document.querySelectorAll('input[type="checkbox"]:checked').forEach(box => {
-                const id = box.dataset.id;
-                const winner = participants.find(p => p.id === id);
-                if (winner) predefinedWinners.push(winner);
-            });
-
-            // 计算普通中奖名额
-            const normalQuota = Math.floor(participants.length / 10) - predefinedWinners.length;
-            
-            // 随机抽取普通中奖者
-            const normalWinners = [];
-            const tempList = [...participants];
-            while (normalWinners.length < normalQuota && tempList.length > 0) {
-                const index = Math.floor(Math.random() * tempList.length);
-                normalWinners.push(tempList.splice(index, 1)[0]);
-            }
-
-            // 合并结果
-            const allWinners = [...predefinedWinners, ...normalWinners];
-            
-            // 显示结果
-            document.getElementById('winnersDisplay').innerHTML = allWinners.map(w => 
-                `<p>${w.id} ${w.name} (${w.company} ${w.title})</p>`
-            ).join('');
-            
-            // 跳转到结果页
-            window.location.hash = '#result';
-        }
-
-        // 路由控制
-        window.addEventListener('hashchange', function() {
-            document.querySelectorAll('.container').forEach(div => div.style.display = 'none');
-            if (window.location.hash === '#admin') {
-                document.getElementById('loginModal').style.display = 'block';
-            } else if (window.location.hash === '#result') {
-                document.getElementById('resultPage').style.display = 'block';
-            } else {
-                document.getElementById('registerForm').style.display = 'block';
-            }
-        });
-    </script>
-</body>
-</html>
