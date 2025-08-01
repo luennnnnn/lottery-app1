@@ -1,763 +1,129 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>幸运抽奖小程序</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>幸运抽奖系统</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
-            color: #333;
-            min-height: 100vh;
-            padding: 20px;
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            padding: 20px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            position: relative;
-        }
-        
-        .admin-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-        
-        .admin-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .content {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        
-        .panel {
-            background: rgba(255, 255, 255, 0.92);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            padding: 25px;
-            flex: 1;
-            min-width: 300px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .panel-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #1a2980;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #444;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        input:focus, select:focus {
-            border-color: #1a2980;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(26, 41, 128, 0.2);
-        }
-        
-        button {
-            background: #1a2980;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 10px;
-        }
-        
-        button:hover {
-            background: #15206e;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(26, 41, 128, 0.4);
-        }
-        
-        .participant-list {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            padding: 10px;
-        }
-        
-        .participant-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            transition: all 0.3s;
-        }
-        
-        .participant-item:hover {
-            background-color: #f9f9f9;
-        }
-        
-        .participant-info {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .participant-number {
-            font-weight: 700;
-            color: #1a2980;
-        }
-        
-        .participant-name {
-            font-weight: 600;
-        }
-        
-        .participant-contact {
-            color: #777;
-            font-size: 0.9rem;
-        }
-        
-        .result-container {
-            background: rgba(255, 255, 255, 0.92);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            padding: 25px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            margin-top: 30px;
-        }
-        
-        .result-title {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #1a2980;
-        }
-        
-        .winners-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        
-        .winner-card {
-            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            width: 250px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            animation: pulse 2s infinite;
-        }
-        
-        .winner-card h3 {
-            margin-bottom: 10px;
-            font-size: 1.4rem;
-        }
-        
-        .winner-info {
-            text-align: left;
-            margin-top: 15px;
-        }
-        
-        .winner-info p {
-            margin: 8px 0;
-        }
-        
-        .admin-controls {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
-        }
-        
-        .admin-panel {
-            background: #f8f9ff;
-            border-left: 4px solid #1a2980;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-        
-        .admin-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #1a2980;
-            margin-bottom: 12px;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .btn-group button {
-            flex: 1;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-        
-        .btn-success {
-            background: #28a745;
-        }
-        
-        .btn-success:hover {
-            background: #218838;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .btn-admin {
-            background: #6f42c1;
-        }
-        
-        .btn-admin:hover {
-            background: #5a32a3;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-        
-        footer {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: 30px;
-            padding: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .admin-login {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .login-box {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            animation: popIn 0.4s ease-out;
-        }
-        
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        .login-box h2 {
-            margin-bottom: 20px;
-            color: #1a2980;
-        }
-        
-        .login-box input {
-            margin-bottom: 15px;
-        }
-        
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            text-align: center;
-            animation: fadeIn 0.5s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .admin-view {
-            background: #f0f4ff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        
-        @media (max-width: 768px) {
-            .content {
-                flex-direction: column;
-            }
-            
-            header h1 {
-                font-size: 2rem;
-            }
-            
-            .admin-btn {
-                position: static;
-                margin-top: 15px;
-            }
-        }
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { display: none; }
+        .admin-btn { position: fixed; top: 10px; right: 10px; padding: 5px; background: #f0f0f0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     </style>
 </head>
 <body>
-    <!-- 管理员登录界面 -->
-    <div id="adminLogin" class="admin-login hidden">
-        <div class="login-box">
-            <h2><i class="fas fa-lock"></i> 管理员登录</h2>
-            <p>请输入管理员密码访问管理功能</p>
-            <input type="password" id="adminPassword" placeholder="输入管理员密码">
-            <button id="loginBtn" class="btn-admin"><i class="fas fa-sign-in-alt"></i> 登录</button>
-            <button id="cancelLogin" style="margin-top:10px; background: #6c757d;" class="btn-secondary"><i class="fas fa-times"></i> 取消</button>
-        </div>
+    <!-- 报名表单 -->
+    <div id="registerForm" class="container">
+        <h2>活动报名</h2>
+        <form id="signupForm">
+            <input type="text" id="name" placeholder="姓名" required><br>
+            <input type="tel" id="phone" placeholder="手机号" required><br>
+            <input type="text" id="company" placeholder="工作单位"><br>
+            <input type="text" id="title" placeholder="职称"><br>
+            <button type="submit">提交报名</button>
+        </form>
     </div>
-    
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-gift"></i> 幸运抽奖活动</h1>
-            <p>每10位参与者抽取1位幸运者，欢迎报名参与！</p>
-            <button id="adminAccessBtn" class="admin-btn"><i class="fas fa-user-cog"></i> 管理员入口</button>
-        </header>
-        
-        <div class="content">
-            <div class="panel">
-                <h2 class="panel-title"><i class="fas fa-user-plus"></i> 报名信息</h2>
-                <form id="registrationForm">
-                    <div class="form-group">
-                        <label for="name">姓名</label>
-                        <input type="text" id="name" placeholder="请输入您的姓名" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">手机号</label>
-                        <input type="tel" id="phone" placeholder="请输入您的手机号" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="company">工作单位</label>
-                        <input type="text" id="company" placeholder="请输入您的工作单位" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="position">职称</label>
-                        <select id="position" required>
-                            <option value="">请选择您的职称</option>
-                            <option value="员工">员工</option>
-                            <option value="主管">主管</option>
-                            <option value="经理">经理</option>
-                            <option value="总监">总监</option>
-                            <option value="高级工程师">高级工程师</option>
-                            <option value="专家">专家</option>
-                            <option value="其他">其他</option>
-                        </select>
-                    </div>
-                    <button type="submit"><i class="fas fa-paper-plane"></i> 提交报名</button>
-                </form>
-                
-                <div id="successMessage" class="success-message hidden">
-                    <i class="fas fa-check-circle"></i> 报名成功！感谢您的参与
-                </div>
-            </div>
-            
-            <div class="panel">
-                <h2 class="panel-title"><i class="fas fa-list-ol"></i> 参与名单</h2>
-                <div class="participant-list" id="participantList">
-                    <div class="participant-item">
-                        <div class="participant-info">
-                            <div class="participant-number">001</div>
-                            <div class="participant-name">张伟</div>
-                        </div>
-                        <div class="participant-contact">技术部</div>
-                    </div>
-                    <div class="participant-item">
-                        <div class="participant-info">
-                            <div class="participant-number">002</div>
-                            <div class="participant-name">王芳</div>
-                        </div>
-                        <div class="participant-contact">市场部</div>
-                    </div>
-                    <div class="participant-item">
-                        <div class="participant-info">
-                            <div class="participant-number">003</div>
-                            <div class="participant-name">李娜</div>
-                        </div>
-                        <div class="participant-contact">设计部</div>
-                    </div>
-                </div>
-                
-                <!-- 管理员视图 -->
-                <div id="adminView" class="admin-view hidden">
-                    <h3 class="panel-title"><i class="fas fa-users"></i> 报名管理</h3>
-                    <div class="participant-list">
-                        <div class="participant-item">
-                            <div class="participant-info">
-                                <div class="participant-number">001</div>
-                                <div class="participant-name">张伟</div>
-                                <div class="participant-contact">138****1234 | 技术部 | 高级工程师</div>
-                            </div>
-                        </div>
-                        <div class="participant-item">
-                            <div class="participant-info">
-                                <div class="participant-number">002</div>
-                                <div class="participant-name">王芳</div>
-                                <div class="participant-contact">139****5678 | 市场部 | 经理</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="admin-controls">
-                        <div class="admin-panel">
-                            <div class="admin-title"><i class="fas fa-user-secret"></i> 抽奖设置</div>
-                            <div class="form-group">
-                                <label for="presetNumber">内定中奖人编号 (001-100)</label>
-                                <input type="text" id="presetNumber" placeholder="例如: 005, 023, 042">
-                                <small style="display:block; margin-top:5px; color:#666;">多个编号用逗号分隔</small>
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" id="savePresetBtn" class="btn-admin"><i class="fas fa-save"></i> 保存设置</button>
-                                <button id="drawBtn" class="btn-success"><i class="fas fa-dice"></i> 开始抽奖</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="result-container">
-            <h2 class="result-title"><i class="fas fa-trophy"></i> 抽奖结果</h2>
-            <div class="winners-container" id="winnersContainer">
-                <div class="winner-card">
-                    <h3>第1组中奖者</h3>
-                    <div class="winner-info">
-                        <p><strong>编号：</strong>005</p>
-                        <p><strong>姓名：</strong>钱七</p>
-                        <p><strong>手机：</strong>135****7890</p>
-                        <p><strong>单位：</strong>XX科技有限公司</p>
-                        <p><strong>职称：</strong>高级工程师</p>
-                    </div>
-                </div>
-                <div class="winner-card">
-                    <h3>第2组中奖者</h3>
-                    <div class="winner-info">
-                        <p><strong>编号：</strong>012</p>
-                        <p><strong>姓名：</strong>周九</p>
-                        <p><strong>手机：</strong>133****5678</p>
-                        <p><strong>单位：</strong>YY设计公司</p>
-                        <p><strong>职称：</strong>设计总监</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+    <!-- 管理员界面 -->
+    <div id="adminPanel" class="container">
+        <h2>管理后台</h2>
+        <button onclick="startLottery()">开始抽奖</button>
+        <div id="winnersList"></div>
     </div>
-    
-    <footer>
-        <p>抽奖规则：每10位参与者抽取1位幸运者 | 活动最终解释权归主办方所有</p>
-        <p>© 2023 幸运抽奖活动 - 保留所有权利</p>
-    </footer>
-    
+
+    <!-- 中奖展示 -->
+    <div id="resultPage" class="container">
+        <h2>中奖名单</h2>
+        <div id="winnersDisplay"></div>
+    </div>
+
+    <!-- 管理员登录弹窗 -->
+    <div id="loginModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border:1px solid #ccc;">
+        <input type="password" id="adminPass" placeholder="输入管理员密码">
+        <button onclick="checkLogin()">登录</button>
+    </div>
+
     <script>
-        // 管理员密码 - 请修改为您自己的密码
-        const ADMIN_PASSWORD = "admin2023";
-        
-        // 初始化参与者数据
         let participants = [];
-        let presetWinners = [];
-        let isAdmin = false;
-        
-        // DOM元素
-        const adminLogin = document.getElementById('adminLogin');
-        const adminPassword = document.getElementById('adminPassword');
-        const loginBtn = document.getElementById('loginBtn');
-        const cancelLogin = document.getElementById('cancelLogin');
-        const adminAccessBtn = document.getElementById('adminAccessBtn');
-        const registrationForm = document.getElementById('registrationForm');
-        const participantList = document.getElementById('participantList');
-        const successMessage = document.getElementById('successMessage');
-        const adminView = document.getElementById('adminView');
-        const drawBtn = document.getElementById('drawBtn');
-        const winnersContainer = document.getElementById('winnersContainer');
-        const savePresetBtn = document.getElementById('savePresetBtn');
-        const presetNumberInput = document.getElementById('presetNumber');
-        
-        // 管理员登录
-        adminAccessBtn.addEventListener('click', function() {
-            adminLogin.classList.remove('hidden');
-        });
-        
-        loginBtn.addEventListener('click', function() {
-            if (adminPassword.value === ADMIN_PASSWORD) {
-                isAdmin = true;
-                adminLogin.classList.add('hidden');
-                adminView.classList.remove('hidden');
-                alert('管理员登录成功！');
-            } else {
-                alert('密码错误，请重试！');
-                adminPassword.value = '';
-            }
-        });
-        
-        cancelLogin.addEventListener('click', function() {
-            adminLogin.classList.add('hidden');
-        });
-        
-        // 生成001-100的参与者名单
-        function generateParticipantList() {
-            participantList.innerHTML = '';
-            
-            for (let i = 1; i <= 100; i++) {
-                const participant = participants.find(p => p.number === i) || {
-                    number: i,
-                    name: `参与者${i.toString().padStart(3, '0')}`,
-                    company: '待填写',
-                    registered: false
-                };
-                
-                const item = document.createElement('div');
-                item.className = 'participant-item';
-                item.innerHTML = `
-                    <div class="participant-info">
-                        <div class="participant-number">${participant.number.toString().padStart(3, '0')}</div>
-                        <div class="participant-name">${participant.name}</div>
-                    </div>
-                    <div class="participant-contact">${participant.company}</div>
-                `;
-                
-                if (participant.registered) {
-                    item.style.backgroundColor = '#e8f4ff';
-                }
-                
-                participantList.appendChild(item);
-            }
-        }
-        
-        // 提交报名表单
-        registrationForm.addEventListener('submit', function(e) {
+        let adminMode = false;
+        const predefinedWinners = []; // 内定中奖人编号
+
+        // 显示报名表单
+        document.getElementById('registerForm').style.display = 'block';
+
+        // 报名表单提交
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const company = document.getElementById('company').value;
-            const position = document.getElementById('position').value;
-            
-            // 生成一个未使用的编号
-            let number;
-            for (let i = 1; i <= 100; i++) {
-                if (!participants.some(p => p.number === i)) {
-                    number = i;
-                    break;
-                }
-            }
-            
-            if (!number) {
-                alert('报名人数已满（最多100人）');
-                return;
-            }
-            
-            const participant = {
-                number,
-                name,
-                phone,
-                company,
-                position,
-                registered: true
+            const newParticipant = {
+                id: String(participants.length + 1).padStart(3, '0'),
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                company: document.getElementById('company').value,
+                title: document.getElementById('title').value
             };
-            
-            participants.push(participant);
-            
-            // 保存到localStorage
-            localStorage.setItem('participants', JSON.stringify(participants));
-            
-            // 更新UI
-            generateParticipantList();
-            
-            // 显示成功消息
-            successMessage.classList.remove('hidden');
-            
-            // 重置表单
-            registrationForm.reset();
-            
-            // 5秒后隐藏成功消息
-            setTimeout(() => {
-                successMessage.classList.add('hidden');
-            }, 5000);
+            participants.push(newParticipant);
+            alert('报名成功！');
+            this.reset();
         });
-        
-        // 抽奖函数
-        function drawWinners() {
-            winnersContainer.innerHTML = '';
-            
-            if (participants.length === 0) {
-                winnersContainer.innerHTML = '<p>暂无参与者数据，请先报名</p>';
-                return;
+
+        // 管理员登录
+        function checkLogin() {
+            if (document.getElementById('adminPass').value === 'admin888') { // 默认密码
+                adminMode = true;
+                document.getElementById('loginModal').style.display = 'none';
+                showAdminPanel();
             }
-            
-            // 对参与者按编号排序
-            const sortedParticipants = [...participants].sort((a, b) => a.number - b.number);
-            
-            // 分组（每组10人）
-            const groups = [];
-            for (let i = 0; i < sortedParticipants.length; i += 10) {
-                groups.push(sortedParticipants.slice(i, i + 10));
-            }
-            
-            // 每组抽取1位获奖者
-            groups.forEach((group, index) => {
-                let winner;
-                
-                // 检查是否有内定中奖人
-                const presetInGroup = group.filter(p => presetWinners.includes(p.number));
-                
-                if (presetInGroup.length > 0) {
-                    // 如果有内定，则使用第一个内定中奖人
-                    winner = presetInGroup[0];
-                } else {
-                    // 否则随机抽取
-                    const randomIndex = Math.floor(Math.random() * group.length);
-                    winner = group[randomIndex];
-                }
-                
-                // 创建中奖者卡片
-                const winnerCard = document.createElement('div');
-                winnerCard.className = 'winner-card';
-                winnerCard.innerHTML = `
-                    <h3>第${index + 1}组中奖者</h3>
-                    <div class="winner-info">
-                        <p><strong>编号：</strong>${winner.number.toString().padStart(3, '0')}</p>
-                        <p><strong>姓名：</strong>${winner.name}</p>
-                        <p><strong>手机：</strong>${winner.phone}</p>
-                        <p><strong>单位：</strong>${winner.company}</p>
-                        <p><strong>职称：</strong>${winner.position}</p>
-                    </div>
-                `;
-                
-                winnersContainer.appendChild(winnerCard);
-            });
         }
-        
-        // 保存内定中奖人
-        savePresetBtn.addEventListener('click', function() {
-            const input = presetNumberInput.value;
-            const numbers = input.split(',')
-                .map(num => parseInt(num.trim()))
-                .filter(num => !isNaN(num) && num >= 1 && num <= 100);
+
+        // 显示管理界面
+        function showAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('winnersList').innerHTML = participants.map(p => 
+                `<div>${p.id} ${p.name} ${p.phone} <input type="checkbox" data-id="${p.id}"></div>`
+            ).join('');
+        }
+
+        // 抽奖逻辑
+        function startLottery() {
+            // 获取内定名单
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(box => {
+                const id = box.dataset.id;
+                const winner = participants.find(p => p.id === id);
+                if (winner) predefinedWinners.push(winner);
+            });
+
+            // 计算普通中奖名额
+            const normalQuota = Math.floor(participants.length / 10) - predefinedWinners.length;
             
-            presetWinners = [...new Set(numbers)]; // 去重
-            
-            // 保存到localStorage
-            localStorage.setItem('presetWinners', JSON.stringify(presetWinners));
-            
-            alert(`已保存内定中奖人：${presetWinners.map(n => n.toString().padStart(3, '0')).join(', ')}`);
-        });
-        
-        // 开始抽奖
-        drawBtn.addEventListener('click', drawWinners);
-        
-        // 页面加载时初始化
-        window.addEventListener('DOMContentLoaded', function() {
-            // 从localStorage加载数据
-            const savedParticipants = localStorage.getItem('participants');
-            const savedPresetWinners = localStorage.getItem('presetWinners');
-            
-            if (savedParticipants) {
-                participants = JSON.parse(savedParticipants);
+            // 随机抽取普通中奖者
+            const normalWinners = [];
+            const tempList = [...participants];
+            while (normalWinners.length < normalQuota && tempList.length > 0) {
+                const index = Math.floor(Math.random() * tempList.length);
+                normalWinners.push(tempList.splice(index, 1)[0]);
             }
+
+            // 合并结果
+            const allWinners = [...predefinedWinners, ...normalWinners];
             
-            if (savedPresetWinners) {
-                presetWinners = JSON.parse(savedPresetWinners);
+            // 显示结果
+            document.getElementById('winnersDisplay').innerHTML = allWinners.map(w => 
+                `<p>${w.id} ${w.name} (${w.company} ${w.title})</p>`
+            ).join('');
+            
+            // 跳转到结果页
+            window.location.hash = '#result';
+        }
+
+        // 路由控制
+        window.addEventListener('hashchange', function() {
+            document.querySelectorAll('.container').forEach(div => div.style.display = 'none');
+            if (window.location.hash === '#admin') {
+                document.getElementById('loginModal').style.display = 'block';
+            } else if (window.location.hash === '#result') {
+                document.getElementById('resultPage').style.display = 'block';
+            } else {
+                document.getElementById('registerForm').style.display = 'block';
             }
-            
-            // 生成参与者列表
-            generateParticipantList();
         });
     </script>
 </body>
